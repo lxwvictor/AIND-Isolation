@@ -38,6 +38,16 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    # debug code
+    print("custom score next legal moves", game.get_legal_moves(player),
+        "number of legal moves", len(game.get_legal_moves(player)))
+    return float(len(game.get_legal_moves(player)))
     raise NotImplementedError
 
 
@@ -117,18 +127,32 @@ class CustomPlayer:
         """
 
         self.time_left = time_left
-
         # TODO: finish this function!
 
         # Perform any required initializations, including selecting an initial
         # move from the game board (i.e., an opening book), or returning
         # immediately if there are no legal moves
 
+        if (not legal_moves) or self.search_depth == 0:
+            return (-1,1)
+
         try:
             # The search method call (alpha beta or minimax) should happen in
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
+            
+            if self.method == "minimax":
+                if self.iterative == True:
+                    best_move = self.minimax(game, float("inf)"))
+                best_move = self.minimax(game, self.search_depth)
+                return best_move
+            elif self.method == "alphabeta":
+                if self.iterative == True:
+                    best_move = self.alphabeta(game, float("inf"))
+                best_move = self.alphabeta(game, self.search_depth)
+                return best_move
+
             pass
 
         except Timeout:
@@ -172,7 +196,38 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
+        if (not game.get_legal_moves()) or self.search_depth == 0:
+            return (-1,1)
+
+        self.cur_depth = 0
+
+        def max_search(self, game, depth):
+            self.cur_depth += 1
+            legal_moves = game.get_legal_moves()
+            if not legal_moves:
+                return (0, game.__last_player_move__[game.__active_player__])
+            if self.cur_depth == depth:
+                # pdb code
+                import pdb; pdb.set_trace()
+                value, move = max([(custom_score(game.forecast_move(m), self), m) for m in legal_moves])
+            else:
+                value, move = max([min_search((game.forecast_move(m) for m in legal_moves), depth)])
+            return value, move
+
+        def min_search(self, game, depth):
+            self.cur_depth += 1
+            legal_moves = game.get_legal_moves()
+            if not legal_moves:
+                return (0, game.__last_player_move__[game.__active_player__])
+            if self.cur_depth == depth:
+                value, move = min([(custom_score(game.forecast_move(m), self), m) for m in legal_moves])
+            else:
+                value, move = min([max_search((game.forecast_move(m) for m in legal_moves), depth)])
+            return value, move
+
         # TODO: finish this function!
+        value, move = max_search(self, game, depth)
+        return move
         raise NotImplementedError
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
