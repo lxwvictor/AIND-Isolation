@@ -45,7 +45,8 @@ def custom_score(game, player):
         return float("inf")
 
     # debug code
-    print("custom score next legal moves", game.get_legal_moves(player),
+    print("cur move",game.get_player_location[game.active_player],
+        "custom score next legal moves", game.get_legal_moves(player),
         "number of legal moves", len(game.get_legal_moves(player)))
     return float(len(game.get_legal_moves(player)))
     raise NotImplementedError
@@ -135,7 +136,8 @@ class CustomPlayer:
 
         if (not legal_moves) or self.search_depth == 0:
             return (-1,1)
-
+        best_value = None
+        best_move = None
         try:
             # The search method call (alpha beta or minimax) should happen in
             # here in order to avoid timeout. The try/except block will
@@ -144,19 +146,28 @@ class CustomPlayer:
             
             if self.method == "minimax":
                 if self.iterative == True:
-                    best_move = self.minimax(game, float("inf)"))
-                best_move = self.minimax(game, self.search_depth)
+                    for depth in range(1, float("inf")):
+                        best_value, best_move = self.minimax(game, depth)
+                        
+                else:
+                    best_value, best_move = self.minimax(game, self.search_depth)
                 return best_move
             elif self.method == "alphabeta":
                 if self.iterative == True:
-                    best_move = self.alphabeta(game, float("inf"))
-                best_move = self.alphabeta(game, self.search_depth)
+                    for depth in range(1, float("inf")):
+                        best_value, best_move = self.alphabeta(game, depth)
+
+                else:
+                    best_value, best_move = self.alphabeta(game, self.search_depth)
                 return best_move
 
             pass
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
+            
+            # Below function may need to fine tune
+            return best_move
             pass
 
         # Return the best move from the last completed search iteration
@@ -197,37 +208,103 @@ class CustomPlayer:
             raise Timeout()
 
         if (not game.get_legal_moves()) or self.search_depth == 0:
-            return (-1,1)
+            return (-1,-1)
 
-        self.cur_depth = 0
+        def max_search(self, game, depth, cur_depth):
+            """ Implemente the max search algorithm. Need to be clear about
+                the terminal state and recursion state.
 
-        def max_search(self, game, depth):
-            self.cur_depth += 1
+            Parameters
+            ----------
+            game : isolation.Board
+            depth: int
+            cur_depth: int
+                The current depth of the node, starting from 0
+
+            Returns
+            -------
+            float: the score
+            tuple(int, int): The best move of the branch
+
+            """
+            cur_depth += 1
             legal_moves = game.get_legal_moves()
-            if not legal_moves:
-                return (0, game.__last_player_move__[game.__active_player__])
-            if self.cur_depth == depth:
-                # pdb code
-                import pdb; pdb.set_trace()
-                value, move = max([(custom_score(game.forecast_move(m), self), m) for m in legal_moves])
+            # deubg code
+            #print("in max search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
+            #print(game.to_string())
+
+            # If we can judge the winner at the current state, then just return
+            # the score and active player's current position
+            if game.is_loser(self):
+                return float("-inf"), game.get_player_location[game.active_player]
+
+            if game.is_winner(self):
+                return float("inf"), game.get_player_location[game.active_player]
+
+            # This is the terminal state of the resursive serach.
+            if cur_depth == depth:
+                value, move = max([(self.score(game.forecast_move(m), self), m)
+                    for m in legal_moves])
             else:
-                value, move = max([min_search((game.forecast_move(m) for m in legal_moves), depth)])
+                # Get the max from all the min nodes. Note that the return value
+                # of this and min frunctions are both in the format of (float,(int,int)).
+                # What we really want to return to a higher level node is the
+                # variable m here, not the returned move from child nodes.
+                (value, _), move = max([(min_search(self, game.forecast_move(m), depth, cur_depth), m)
+                    for m in legal_moves])
+            # debug code
+            #print("in max search, after value", value, "after move", move, "\n")
             return value, move
 
-        def min_search(self, game, depth):
-            self.cur_depth += 1
+        def min_search(self, game, depth, cur_depth):
+            """ Implemente the min search algorithm. Need to be clear about
+                the terminal state and recursion state.
+
+            Parameters
+            ----------
+            game : isolation.Board
+            depth: int
+            cur_depth: int
+                The current depth of the node, starting from 0
+
+            Returns
+            -------
+            float: the score
+            tuple(int, int): The best move of the branch
+
+            """
+
+            cur_depth += 1
             legal_moves = game.get_legal_moves()
-            if not legal_moves:
-                return (0, game.__last_player_move__[game.__active_player__])
-            if self.cur_depth == depth:
-                value, move = min([(custom_score(game.forecast_move(m), self), m) for m in legal_moves])
+            # deubg code
+            #print("in min search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
+            #print(game.to_string())
+
+            # If we can judge the winner at the current state, then just return
+            # the score and active player's current position
+            if game.is_loser(self):
+                return float("-inf"), game.get_player_location[game.active_player]
+
+            if game.is_winner(self):
+                return float("inf"), game.get_player_location[game.active_player]
+
+            # This is the terminal state of the resursive searcxh
+            if cur_depth == depth:
+                value, move = min([(self.score(game.forecast_move(m), self), m)
+                    for m in legal_moves])
             else:
-                value, move = min([max_search((game.forecast_move(m) for m in legal_moves), depth)])
+                # Get the min from all the max nodes. Note that the return value
+                # of this and max frunctions are both in the format of (float,(int,int)).
+                # What we really want to return to a higher level node is the
+                # variable m here, not the returned move from child nodes.
+                (value, _), move = min([(max_search(self, game.forecast_move(m), depth, cur_depth), m)
+                    for m in legal_moves])
+            # debug code
+            #print("in min search, after value", value, "after move", move, "\n")
             return value, move
 
         # TODO: finish this function!
-        value, move = max_search(self, game, depth)
-        return move
+        return max_search(self, game, depth, 0)
         raise NotImplementedError
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
