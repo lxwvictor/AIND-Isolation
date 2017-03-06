@@ -147,6 +147,7 @@ class CustomPlayer:
                         depth += 1
                         best_value, best_move = self.minimax(game, depth)
                         pass
+                        
                 else:
                     best_value, best_move = self.minimax(game, self.search_depth)
                 return best_move
@@ -255,21 +256,20 @@ class CustomPlayer:
             value = float("-inf")
             move = (-1,-1)
 
-            for m in legal_moves:
-                if cur_depth == depth: 
-                    # This is the terminal state when current depth is the
-                    # defined depth
+            if cur_depth == depth:
+                for m in legal_moves:
                     score_value = self.score(game.forecast_move(m), self)
-                else:
-                    # Go to min branch if not in leaf node
-                    score_value = min_search(self, game.forecast_move(m),
-                        depth, cur_depth)[0]
-
-                # Find the max value
-                if score_value > value:
+                    if score_value > value:
                         value = score_value
                         move = m
-
+            else:
+                for m in legal_moves:
+                    score_value = min_search(self, game.forecast_move(m), depth, cur_depth)[0]
+                    if score_value > value:
+                        value = score_value
+                        move = m
+            # debug code
+            #print("in max search, after value", value, "after move", move, "\n")
             return value, move
 
         def min_search(self, game, depth, cur_depth):
@@ -318,21 +318,20 @@ class CustomPlayer:
             value = float("inf")
             move = (-1,-1)
 
-            for m in legal_moves:
-                if cur_depth == depth:
-                    # This is the terminal state when current depth is the
-                    # defined depth
+            if cur_depth == depth:
+                for m in legal_moves:
                     score_value = self.score(game.forecast_move(m), self)
-                else:
-                    # Go to max branch if not in leaf node
-                    score_value = max_search(self, game.forecast_move(m), 
-                        depth, cur_depth)[0]
-
-                # Find the min value
-                if score_value < value:
+                    if score_value < value:
                         value = score_value
                         move = m
-
+            else:
+                for m in legal_moves:
+                    score_value = max_search(self, game.forecast_move(m), depth, cur_depth)[0]
+                    if score_value < value:
+                        value = score_value
+                        move = m
+            # debug code
+            #print("in min search, after value", value, "after move", move, "\n")
             return value, move
 
         # TODO: finish this function!
@@ -431,27 +430,40 @@ class CustomPlayer:
             #    for m in legal_moves])
             value = float("-inf")
             move = (-1,-1)
+            #pdb
+            #import pdb; pdb.set_trace()
             
-            for m in legal_moves:
-                if cur_depth == depth:
-                    # This is the terminal state when current depth is the
-                    # defined depth
+            if cur_depth == depth:
+                for m in legal_moves:
+                    #print("XB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
                     score_value = self.score(game.forecast_move(m), self)
-                else:
-                    # Go to min branch if not in leaf node
-                    score_value = min_search(self, game.forecast_move(m),
-                        depth, cur_depth, myalpha, mybeta)[0]
-
-                # Find the max value
-                if score_value > value:
+                    if score_value > value:
                         value = score_value
                         move = m
-                # Perform pruning
-                if value >= mybeta:
-                    return value, move
-                if value > myalpha:
-                    myalpha = value
 
+                    if value >= mybeta:
+                        #print("XLF PRUN", value, move)
+                        return value, move
+                    if value > myalpha:
+                        myalpha = value
+
+                    #print("XA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            else:
+                for m in legal_moves:
+                    #print("XB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    #import pdb; pdb.set_trace()
+                    score_value = min_search(self, game.forecast_move(m),
+                        depth, cur_depth, myalpha, mybeta)[0]
+                    if score_value > value:
+                        value = score_value
+                        move = m
+
+                    if value >= mybeta:
+                        #print("XBD PRUN", value, move)
+                        return value, move
+                    if value > myalpha:
+                        myalpha = value
+                    #print("XA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
             return value, move
 
         def min_search(self, game, depth, cur_depth, myalpha, mybeta):
@@ -499,28 +511,35 @@ class CustomPlayer:
             #    for m in legal_moves])
             value = float("inf")
             move = (-1,-1)
-
-            for m in legal_moves:
-                if cur_depth == depth:
-                    # This is the terminal state when current depth is the
-                    # defined depth
+            if cur_depth == depth:
+                for m in legal_moves:
+                    #print("NB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
                     score_value = self.score(game.forecast_move(m), self)
-                else:
-                    # Go to max branch if not in leaf node
-                    score_value = max_search(self, game.forecast_move(m), 
-                        depth, cur_depth, myalpha, mybeta)[0]
-
-                # Find the min value
-                if score_value < value:
+                    if score_value < value:
                         value = score_value
                         move = m
 
-                # Perform pruning
-                if value <= myalpha:
-                    return value, move
-                if value < mybeta:
-                    mybeta = value
+                    if value <= myalpha:
+                        #print("NLF PRUN", value, move)
+                        return value, move
+                    if value < mybeta:
+                        mybeta = value
+                    #print("NA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            else:
+                for m in legal_moves:
+                    #print("NB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    score_value = max_search(self, game.forecast_move(m), 
+                        depth, cur_depth, myalpha, mybeta)[0]
+                    if score_value < value:
+                        value = score_value
+                        move = m
 
+                    if value <= myalpha:
+                        #print("NBD PRUN", value, move)
+                        return value, move
+                    if value < mybeta:
+                        mybeta = value
+                    #print("NA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
             return value, move
 
         # TODO: finish this function!

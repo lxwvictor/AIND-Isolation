@@ -228,7 +228,7 @@ class Project1Test(unittest.TestCase):
         return agentUT, board
 
     @timeout(5)
-    # @unittest.skip("Skip eval function test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip eval function test.")  # Uncomment this line to skip test
     def test_heuristic(self):
         """ Test output interface of heuristic score function interface."""
 
@@ -242,9 +242,10 @@ class Project1Test(unittest.TestCase):
 
         self.assertIsInstance(game_agent.custom_score(game, player1), float,
             "The heuristic function should return a floating point")
+        print("Finished test_heuristic")
 
-    timeout(5)
-    # @unittest.skip("Skip simple minimax test.")  # Uncomment this line to skip test
+    @timeout(5)
+    #@unittest.skip("Skip simple minimax test.")  # Uncomment this line to skip test
     def test_minimax_interface(self):
         """ Test CustomPlayer.minimax interface with simple input """
         h, w = 7, 7  # board size
@@ -273,9 +274,10 @@ class Project1Test(unittest.TestCase):
                             ("Minimax function should return a floating " +
                              "point value approximating the score for the " +
                              "branch being searched."))
+        print("Finished test_minimax_interface")
 
-    timeout(5)
-    # @unittest.skip("Skip alphabeta test.")  # Uncomment this line to skip test
+    @timeout(5)
+    #@unittest.skip("Skip alphabeta test.")  # Uncomment this line to skip test
     def test_alphabeta_interface(self):
         """ Test CustomPlayer.alphabeta interface with simple input """
         h, w = 9, 9  # board size
@@ -304,9 +306,10 @@ class Project1Test(unittest.TestCase):
                             ("Alpha Beta function should return a floating " +
                              "point value approximating the score for the " +
                              "branch being searched."))
+        print("Finished test_alphabeta_interface")
 
     @timeout(5)
-    # @unittest.skip("Skip get_move test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip get_move test.")  # Uncomment this line to skip test
     def test_get_move_interface(self):
         """ Test CustomPlayer.get_move interface with simple input """
         h, w = 9, 9  # board size
@@ -356,9 +359,10 @@ class Project1Test(unittest.TestCase):
                        "the game board for the location of the agent's " +
                        "next move. The move must be one of the legal moves " +
                        "on the current game board."))
+        print("Finished test_get_move_interface")
 
     @timeout(5)
-    # @unittest.skip("Skip minimax test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip minimax test.")  # Uncomment this line to skip test
     def test_minimax(self):
         """ Test CustomPlayer.minimax
 
@@ -384,6 +388,7 @@ class Project1Test(unittest.TestCase):
         value_table[1][5] = 1  # depth 1 & 2
         value_table[4][3] = 2  # depth 3 & 4
         value_table[6][6] = 3  # depth 5
+
         heuristic = makeEvalTable(value_table)
 
         # These moves are the branches that will lead to the cells in the value
@@ -413,6 +418,16 @@ class Project1Test(unittest.TestCase):
             num_explored_valid = board.counts[0] == counts[idx][0]
             num_unique_valid = board.counts[1] == counts[idx][1]
 
+            """debug code
+            print(num_explored_valid, WRONG_NUM_EXPLORED.format(
+                method, test_depth, counts[idx][0], board.counts[0]))
+
+            print(num_unique_valid, UNEXPECTED_VISIT.format(
+                method, test_depth, counts[idx][1], board.counts[1]))
+
+            print(move, expected_moves[idx // 2], WRONG_MOVE.format(
+                method, test_depth, expected_moves[idx // 2], move))
+            """
             self.assertTrue(num_explored_valid, WRONG_NUM_EXPLORED.format(
                 method, test_depth, counts[idx][0], board.counts[0]))
 
@@ -421,9 +436,10 @@ class Project1Test(unittest.TestCase):
 
             self.assertIn(move, expected_moves[idx // 2], WRONG_MOVE.format(
                 method, test_depth, expected_moves[idx // 2], move))
+        print("Finished test_minimax")
 
     @timeout(20)
-    # @unittest.skip("Skip alpha-beta test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip alpha-beta test.")  # Uncomment this line to skip test
     def test_alphabeta(self):
         """ Test CustomPlayer.alphabeta
 
@@ -459,7 +475,8 @@ class Project1Test(unittest.TestCase):
                                           loc1=starting_location,
                                           loc2=adversary_location,
                                           w=w, h=h)
-
+            #pdb code
+            #import pdb; pdb.set_trace()
             # disable search timeout by returning a constant value
             agentUT.time_left = lambda: 1e3
             _, move = agentUT.alphabeta(board, test_depth)
@@ -467,6 +484,17 @@ class Project1Test(unittest.TestCase):
             num_explored_valid = board.counts[0] == counts[idx][0]
             num_unique_valid = board.counts[1] == counts[idx][1]
 
+            """debug code
+            print(num_explored_valid, WRONG_NUM_EXPLORED.format(
+                method, test_depth, counts[idx][0], board.counts[0]))
+
+            print(num_unique_valid, UNEXPECTED_VISIT.format(
+                method, test_depth, counts[idx][1], board.counts[1]))
+
+            print(move, first_branch, WRONG_MOVE.format(
+                method, test_depth, first_branch, move))
+            """
+            
             self.assertTrue(num_explored_valid, WRONG_NUM_EXPLORED.format(
                 method, test_depth, counts[idx][0], board.counts[0]))
 
@@ -475,10 +503,11 @@ class Project1Test(unittest.TestCase):
 
             self.assertIn(move, first_branch, WRONG_MOVE.format(
                 method, test_depth, first_branch, move))
+        print("Finished test_alphabeta")
 
 
     @timeout(20)
-    # @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
     def test_get_move(self):
         """ Test iterative deepening in CustomPlayer.get_move by placing an
         agent on the game board and performing ID minimax search, which
@@ -534,7 +563,7 @@ class Project1Test(unittest.TestCase):
 
             self.assertTrue(chosen_move in legal_moves, INVALID_MOVE.format(
                 legal_moves, chosen_move))
-
+        print("Finished test_get_move")
 
 if __name__ == '__main__':
     unittest.main()
