@@ -155,10 +155,10 @@ class CustomPlayer:
             elif self.method == "alphabeta":
                 if self.iterative == True:
                     for depth in range(1, float("inf")):
-                        best_value, best_move = self.alphabeta(game, depth)
+                        best_value, best_move = alphabeta(game, depth)
 
                 else:
-                    best_value, best_move = self.alphabeta(game, self.search_depth)
+                    best_value, best_move = alphabeta(game, self.search_depth)
                 return best_move
 
             pass
@@ -241,17 +241,32 @@ class CustomPlayer:
             if game.is_winner(self):
                 return float("inf"), game.get_player_location[game.active_player]
 
-            # This is the terminal state of the resursive serach.
+            # Get the max from all the min nodes. The score value is initialized
+            # as negative infinity. Then for each possible move m, get the
+            # return value (the first element of the tuple) and compare with
+            # the current value until all child nodes searched and the max,
+            # together with the move will be returned.
+            # 
+            # Below is another way to implement, but the readiably is really
+            # lousy!
+            # 
+            # #(value, _), move = max([(min_search(self, game.forecast_move(m), depth, cur_depth), m)
+            #    for m in legal_moves])
+            value = float("-inf")
+            move = (-1,-1)
+
             if cur_depth == depth:
-                value, move = max([(self.score(game.forecast_move(m), self), m)
-                    for m in legal_moves])
+                for m in legal_moves:
+                    score_value = self.score(game.forecast_move(m), self)
+                    if score_value > value:
+                        value = score_value
+                        move = m
             else:
-                # Get the max from all the min nodes. Note that the return value
-                # of this and min frunctions are both in the format of (float,(int,int)).
-                # What we really want to return to a higher level node is the
-                # variable m here, not the returned move from child nodes.
-                (value, _), move = max([(min_search(self, game.forecast_move(m), depth, cur_depth), m)
-                    for m in legal_moves])
+                for m in legal_moves:
+                    score_value = min_search(self, game.forecast_move(m), depth, cur_depth)[0]
+                    if score_value > value:
+                        value = score_value
+                        move = m
             # debug code
             #print("in max search, after value", value, "after move", move, "\n")
             return value, move
@@ -288,23 +303,41 @@ class CustomPlayer:
             if game.is_winner(self):
                 return float("inf"), game.get_player_location[game.active_player]
 
-            # This is the terminal state of the resursive searcxh
+            # Get the min from all the max nodes. The score value is initialized
+            # as positive infinity. Then for each possible move m, get the
+            # return value (the first element of the tuple) and compare with
+            # the current value until all child nodes searched and the min,
+            # together with the move will be returned.
+            # 
+            # Below is another way to implement, but the readiably is really
+            # lousy!
+            # 
+            #(value, _), move = min([(max_search(self, game.forecast_move(m), depth, cur_depth), m)
+            #    for m in legal_moves])
+            value = float("inf")
+            move = (-1,-1)
+
             if cur_depth == depth:
-                value, move = min([(self.score(game.forecast_move(m), self), m)
-                    for m in legal_moves])
+                for m in legal_moves:
+                    score_value = self.score(game.forecast_move(m), self)
+                    if score_value < value:
+                        value = score_value
+                        move = m
             else:
-                # Get the min from all the max nodes. Note that the return value
-                # of this and max frunctions are both in the format of (float,(int,int)).
-                # What we really want to return to a higher level node is the
-                # variable m here, not the returned move from child nodes.
-                (value, _), move = min([(max_search(self, game.forecast_move(m), depth, cur_depth), m)
-                    for m in legal_moves])
+                for m in legal_moves:
+                    score_value = max_search(self, game.forecast_move(m), depth, cur_depth)[0]
+                    if score_value < value:
+                        value = score_value
+                        move = m
             # debug code
             #print("in min search, after value", value, "after move", move, "\n")
             return value, move
 
         # TODO: finish this function!
-        return max_search(self, game, depth, 0)
+        if maximizing_player:
+            return max_search(self, game, depth, 0)
+        else:
+            return min_search(self, game, depth, 0)
         raise NotImplementedError
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
@@ -349,4 +382,168 @@ class CustomPlayer:
             raise Timeout()
 
         # TODO: finish this function!
+        if (not game.get_legal_moves()) or self.search_depth == 0:
+            return (-1,-1)
+
+        def max_search(self, game, depth, cur_depth, myalpha, mybeta):
+            """ Implemente the max search algorithm. Need to be clear about
+                the terminal state and recursion state.
+
+            Parameters
+            ----------
+            game : isolation.Board
+            depth: int
+            cur_depth: int
+                The current depth of the node, starting from 0
+
+            Returns
+            -------
+            float: the score
+            tuple(int, int): The best move of the branch
+
+            """
+            cur_depth += 1
+            legal_moves = game.get_legal_moves()
+            # deubg code
+            #print("in max search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
+            #print(game.to_string())
+
+            # If we can judge the winner at the current state, then just return
+            # the score and active player's current position
+            if game.is_loser(self):
+                return float("-inf"), game.get_player_location[game.active_player]
+
+            if game.is_winner(self):
+                return float("inf"), game.get_player_location[game.active_player]
+
+            # Get the max from all the min nodes. The score value is initialized
+            # as negative infinity. Then for each possible move m, get the
+            # return value (the first element of the tuple) and compare with
+            # the current value until all child nodes searched and the max,
+            # together with the move will be returned.
+            # 
+            # Below is another way to implement, but the readiably is really
+            # lousy!
+            # 
+            # #(value, _), move = max([(min_search(self, game.forecast_move(m), depth, cur_depth), m)
+            #    for m in legal_moves])
+            value = float("-inf")
+            move = (-1,-1)
+            #pdb
+            #import pdb; pdb.set_trace()
+            
+            if cur_depth == depth:
+                for m in legal_moves:
+                    #print("XB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    score_value = self.score(game.forecast_move(m), self)
+                    if score_value > value:
+                        value = score_value
+                        move = m
+
+                    if value >= mybeta:
+                        #print("XLF PRUN", value, move)
+                        return value, move
+                    if value > myalpha:
+                        myalpha = value
+
+                    #print("XA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            else:
+                for m in legal_moves:
+                    #print("XB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    #import pdb; pdb.set_trace()
+                    score_value = min_search(self, game.forecast_move(m),
+                        depth, cur_depth, myalpha, mybeta)[0]
+                    if score_value > value:
+                        value = score_value
+                        move = m
+
+                    if value >= mybeta:
+                        #print("XBD PRUN", value, move)
+                        return value, move
+                    if value > myalpha:
+                        myalpha = value
+                    #print("XA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            return value, move
+
+        def min_search(self, game, depth, cur_depth, myalpha, mybeta):
+            """ Implemente the min search algorithm. Need to be clear about
+                the terminal state and recursion state.
+
+            Parameters
+            ----------
+            game : isolation.Board
+            depth: int
+            cur_depth: int
+                The current depth of the node, starting from 0
+
+            Returns
+            -------
+            float: the score
+            tuple(int, int): The best move of the branch
+
+            """
+
+            cur_depth += 1
+            legal_moves = game.get_legal_moves()
+            # deubg code
+            #print("in min search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
+            #print(game.to_string())
+
+            # If we can judge the winner at the current state, then just return
+            # the score and active player's current position
+            if game.is_loser(self):
+                return float("-inf"), game.get_player_location[game.active_player]
+
+            if game.is_winner(self):
+                return float("inf"), game.get_player_location[game.active_player]
+
+            # Get the min from all the max nodes. The score value is initialized
+            # as positive infinity. Then for each possible move m, get the
+            # return value (the first element of the tuple) and compare with
+            # the current value until all child nodes searched and the min,
+            # together with the move will be returned.
+            # 
+            # Below is another way to implement, but the readiably is really
+            # lousy!
+            # 
+            #(value, _), move = min([(max_search(self, game.forecast_move(m), depth, cur_depth), m)
+            #    for m in legal_moves])
+            value = float("inf")
+            move = (-1,-1)
+            if cur_depth == depth:
+                for m in legal_moves:
+                    #print("NB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    score_value = self.score(game.forecast_move(m), self)
+                    if score_value < value:
+                        value = score_value
+                        move = m
+
+                    if value <= myalpha:
+                        #print("NLF PRUN", value, move)
+                        return value, move
+                    if value < mybeta:
+                        mybeta = value
+                    #print("NA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            else:
+                for m in legal_moves:
+                    #print("NB m",m,cur_depth,"/",depth,"a",myalpha,"b",mybeta)
+                    score_value = max_search(self, game.forecast_move(m), 
+                        depth, cur_depth, myalpha, mybeta)[0]
+                    if score_value < value:
+                        value = score_value
+                        move = m
+
+                    if value <= myalpha:
+                        #print("NBD PRUN", value, move)
+                        return value, move
+                    if value < mybeta:
+                        mybeta = value
+                    #print("NA m",m,cur_depth,"/",depth,"v",value,"a",myalpha,"b",mybeta)
+            return value, move
+
+        # TODO: finish this function!
+        if maximizing_player:
+            return max_search(self, game, depth, 0, alpha, beta)
+        else:
+            return min_search(self, game, depth, 0, alpha, beta)
         raise NotImplementedError
