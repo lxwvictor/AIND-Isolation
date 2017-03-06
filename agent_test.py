@@ -242,6 +242,7 @@ class Project1Test(unittest.TestCase):
 
         self.assertIsInstance(game_agent.custom_score(game, player1), float,
             "The heuristic function should return a floating point")
+        print("Finished test_heuristic")
 
     #timeout(5)
     #@unittest.skip("Skip simple minimax test.")  # Uncomment this line to skip test
@@ -273,6 +274,7 @@ class Project1Test(unittest.TestCase):
                             ("Minimax function should return a floating " +
                              "point value approximating the score for the " +
                              "branch being searched."))
+        print("Finished test_minimax_interface")
 
     timeout(5)
     #@unittest.skip("Skip alphabeta test.")  # Uncomment this line to skip test
@@ -304,6 +306,7 @@ class Project1Test(unittest.TestCase):
                             ("Alpha Beta function should return a floating " +
                              "point value approximating the score for the " +
                              "branch being searched."))
+        print("Finished test_alphabeta_interface")
 
     #@timeout(5)
    # @unittest.skip("Skip get_move test.")  # Uncomment this line to skip test
@@ -356,6 +359,7 @@ class Project1Test(unittest.TestCase):
                        "the game board for the location of the agent's " +
                        "next move. The move must be one of the legal moves " +
                        "on the current game board."))
+        print("Finished test_get_move_interface")
 
     #@timeout(5)
     #@unittest.skip("Skip minimax test.")  # Uncomment this line to skip test
@@ -432,6 +436,7 @@ class Project1Test(unittest.TestCase):
 
             self.assertIn(move, expected_moves[idx // 2], WRONG_MOVE.format(
                 method, test_depth, expected_moves[idx // 2], move))
+        print("Finished test_minimax")
 
     #@timeout(20)
     #@unittest.skip("Skip alpha-beta test.")  # Uncomment this line to skip test
@@ -463,7 +468,6 @@ class Project1Test(unittest.TestCase):
 
         for idx in range(len(counts)):
             test_depth = idx + 1  # pruning guarantee requires min depth of 3
-            print("idx", idx)
             first_branch = []
             heuristic = makeBranchEval(first_branch)
             agentUT, board = self.initAUT(test_depth, heuristic,
@@ -480,7 +484,7 @@ class Project1Test(unittest.TestCase):
             num_explored_valid = board.counts[0] == counts[idx][0]
             num_unique_valid = board.counts[1] == counts[idx][1]
 
-            
+            """debug code
             print(num_explored_valid, WRONG_NUM_EXPLORED.format(
                 method, test_depth, counts[idx][0], board.counts[0]))
 
@@ -489,8 +493,8 @@ class Project1Test(unittest.TestCase):
 
             print(move, first_branch, WRONG_MOVE.format(
                 method, test_depth, first_branch, move))
+            """
             
-
             self.assertTrue(num_explored_valid, WRONG_NUM_EXPLORED.format(
                 method, test_depth, counts[idx][0], board.counts[0]))
 
@@ -499,10 +503,11 @@ class Project1Test(unittest.TestCase):
 
             self.assertIn(move, first_branch, WRONG_MOVE.format(
                 method, test_depth, first_branch, move))
+        print("Finished test_alphabeta")
 
 
     @timeout(20)
-    @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
+    #@unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
     def test_get_move(self):
         """ Test iterative deepening in CustomPlayer.get_move by placing an
         agent on the game board and performing ID minimax search, which
@@ -558,7 +563,7 @@ class Project1Test(unittest.TestCase):
 
             self.assertTrue(chosen_move in legal_moves, INVALID_MOVE.format(
                 legal_moves, chosen_move))
-
+        print("Finished test_get_move")
 
 if __name__ == '__main__':
     unittest.main()

@@ -146,17 +146,22 @@ class CustomPlayer:
             
             if self.method == "minimax":
                 if self.iterative == True:
-                    for depth in range(1, float("inf")):
+                    depth = 0
+                    while True:
+                        depth += 1
                         best_value, best_move = self.minimax(game, depth)
+                        pass
                         
                 else:
                     best_value, best_move = self.minimax(game, self.search_depth)
                 return best_move
             elif self.method == "alphabeta":
                 if self.iterative == True:
-                    for depth in range(1, float("inf")):
+                    depth = 0
+                    while True:
+                        depth += 1
                         best_value, best_move = alphabeta(game, depth)
-
+                        pass
                 else:
                     best_value, best_move = alphabeta(game, self.search_depth)
                 return best_move
