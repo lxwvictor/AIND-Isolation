@@ -44,10 +44,6 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    # debug code
-    print("cur move",game.get_player_location[game.active_player],
-        "custom score next legal moves", game.get_legal_moves(player),
-        "number of legal moves", len(game.get_legal_moves(player)))
     return float(len(game.get_legal_moves(player)))
     raise NotImplementedError
 
