@@ -44,7 +44,18 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return 0.8 + random.random() * 0.2 * float(own_moves - opp_moves)
+    """
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
     return float(len(game.get_legal_moves(player)))
+    """
     raise NotImplementedError
 
 
@@ -79,13 +90,20 @@ class CustomPlayer:
     """
 
     def __init__(self, search_depth=3, score_fn=custom_score,
-                 iterative=True, method='minimax', timeout=10.):
+                 iterative=True, method='minimax', timeout=98.):
+        # timeout of 98 is chose because it's small than 99 (from agent_test.py)
+        # and 150 (from tournament.py). Since the branch factor is max of 8,
+        # in the iterative depeening test, 99 is actually not big enough.
+        # Supposing it takes 20ms on level 3, then level 4 may take 160ms,
+        # already exceeded the 150ms. 98 is a compromise, even though it still
+        # has timeout in the tests from tounament.py
         self.search_depth = search_depth
         self.iterative = iterative
         self.score = score_fn
         self.method = method
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
+        #print("dp", search_depth, "it", iterative, "mt", method)
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
@@ -123,6 +141,10 @@ class CustomPlayer:
             (-1, -1) if there are no available legal moves.
         """
 
+        # The self.time_left is a function, use self.time_left() to know how many
+        # miliseconds left, the initial value was passed from the calling
+        # function which made the player to start move. 150 from tounament.py.
+        # 99 from agent_test.py
         self.time_left = time_left
         # TODO: finish this function!
 
@@ -155,10 +177,13 @@ class CustomPlayer:
                     depth = 0
                     while True:
                         depth += 1
-                        best_value, best_move = alphabeta(game, depth)
+                        #print("dp", depth, "tl", self.time_left())
+                        #print(game.to_string())
+                        best_value, best_move = self.alphabeta(game, depth)
+                        #print(best_value, best_move)
                         pass
                 else:
-                    best_value, best_move = alphabeta(game, self.search_depth)
+                    best_value, best_move = self.alphabeta(game, self.search_depth)
                 return best_move
 
             pass
@@ -167,6 +192,8 @@ class CustomPlayer:
             # Handle any actions required at timeout, if necessary
             
             # Below function may need to fine tune
+            #import pdb; pdb.set_trace()
+            #print("in timeout", best_move)
             return best_move
             pass
 
@@ -236,10 +263,10 @@ class CustomPlayer:
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
             if game.is_loser(self):
-                return float("-inf"), game.get_player_location[game.active_player]
+                return float("-inf"), game.get_player_location(game.active_player)
 
             if game.is_winner(self):
-                return float("inf"), game.get_player_location[game.active_player]
+                return float("inf"), game.get_player_location(game.active_player)
 
             # Get the max from all the min nodes. The score value is initialized
             # as negative infinity. Then for each possible move m, get the
@@ -299,10 +326,10 @@ class CustomPlayer:
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
             if game.is_loser(self):
-                return float("-inf"), game.get_player_location[game.active_player]
+                return float("-inf"), game.get_player_location(game.active_player)
 
             if game.is_winner(self):
-                return float("inf"), game.get_player_location[game.active_player]
+                return float("inf"), game.get_player_location(game.active_player)
 
             # Get the min from all the max nodes. The score value is initialized
             # as positive infinity. Then for each possible move m, get the
@@ -413,10 +440,10 @@ class CustomPlayer:
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
             if game.is_loser(self):
-                return float("-inf"), game.get_player_location[game.active_player]
+                return float("-inf"), game.get_player_location(game.active_player)
 
             if game.is_winner(self):
-                return float("inf"), game.get_player_location[game.active_player]
+                return float("inf"), game.get_player_location(game.active_player)
 
             # Get the max from all the min nodes. The score value is initialized
             # as negative infinity. Then for each possible move m, get the
@@ -481,10 +508,10 @@ class CustomPlayer:
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
             if game.is_loser(self):
-                return float("-inf"), game.get_player_location[game.active_player]
+                return float("-inf"), game.get_player_location(game.active_player)
 
             if game.is_winner(self):
-                return float("inf"), game.get_player_location[game.active_player]
+                return float("inf"), game.get_player_location(game.active_player)
 
             # Get the min from all the max nodes. The score value is initialized
             # as positive infinity. Then for each possible move m, get the
