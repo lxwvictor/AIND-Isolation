@@ -77,14 +77,7 @@ def play_match(player1, player2):
 
     # play both games and tally the results
     for game in games:
-        #print("before play TIME_LIMIT", TIME_LIMIT, "\n")
-        #print(game.to_string())
-        #import pdb; pdb.set_trace()
         winner, _, termination = game.play(time_limit=TIME_LIMIT)
-        #print("winner", winner, "termination", termination)
-        #print("after play TIME_LIMIT", TIME_LIMIT, "\n")
-        #print(game.to_string())
-        #print("winner is", winner)
 
         if player1 == winner:
             num_wins[player1] += 1
@@ -158,12 +151,9 @@ def main():
     # an agent using minimax search with the open moves heuristic.
     mm_agents = [Agent(CustomPlayer(score_fn=h, **MM_ARGS),
                        "MM_" + name) for name, h in HEURISTICS]
-    #print("mm", mm_agents)
     ab_agents = [Agent(CustomPlayer(score_fn=h, **AB_ARGS),
                        "AB_" + name) for name, h in HEURISTICS]
-    #print("ab", ab_agents)
     random_agents = [Agent(RandomPlayer(), "Random")]
-    #print("rd", random_agents)
 
     # ID_Improved agent is used for comparison to the performance of the
     # submitted agent for calibration on the performance across different
@@ -172,7 +162,6 @@ def main():
     # faster or slower computers.
     test_agents = [Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
                    Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student")]
-    #print("ts", test_agents)
 
     print(DESCRIPTION)
     for agentUT in test_agents:

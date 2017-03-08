@@ -329,9 +329,7 @@ class Board(object):
 
             move_start = curr_time_millis()
             time_left = lambda : time_limit - (curr_time_millis() - move_start)
-            #print("time left from isolation", time_left())
             curr_move = self.active_player.get_move(game_copy, legal_player_moves, time_left)
-            #print("in isolation, time_left", time_left(), "after get_move", game_copy.to_string())
             move_end = time_left()
 
             # print move_end
@@ -345,15 +343,9 @@ class Board(object):
                 move_history[-1].append(curr_move)
 
             if move_end < 0:
-                #print("time left", move_end)
                 return self.__inactive_player__, move_history, "timeout"
 
             if curr_move not in legal_player_moves:
-                #print("time left", move_end)
                 return self.__inactive_player__, move_history, "illegal move"
 
-            #import pdb; pdb.set_trace()
             self.apply_move(curr_move)
-
-            #print("in isolation\n")
-            #print(self.to_string())

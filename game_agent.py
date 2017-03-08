@@ -46,16 +46,8 @@ def custom_score(game, player):
 
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    return 0.8 + random.random() * 0.2 * float(own_moves - opp_moves)
-    """
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-
-    return float(len(game.get_legal_moves(player)))
-    """
+    return float(own_moves - opp_moves)
+    
     raise NotImplementedError
 
 
@@ -161,7 +153,6 @@ class CustomPlayer:
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
-            
             if self.method == "minimax":
                 if self.iterative == True:
                     depth = 0
@@ -190,14 +181,9 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            
-            # Below function may need to fine tune
-            #import pdb; pdb.set_trace()
-            #print("in timeout", best_move)
             return best_move
             pass
 
-        # Return the best move from the last completed search iteration
         raise NotImplementedError
 
     def minimax(self, game, depth, maximizing_player=True):
@@ -256,9 +242,6 @@ class CustomPlayer:
             """
             cur_depth += 1
             legal_moves = game.get_legal_moves()
-            # deubg code
-            #print("in max search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
-            #print(game.to_string())
 
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
@@ -319,9 +302,6 @@ class CustomPlayer:
 
             cur_depth += 1
             legal_moves = game.get_legal_moves()
-            # deubg code
-            #print("in min search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
-            #print(game.to_string())
 
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
@@ -433,9 +413,6 @@ class CustomPlayer:
             """
             cur_depth += 1
             legal_moves = game.get_legal_moves()
-            # deubg code
-            #print("in max search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
-            #print(game.to_string())
 
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
@@ -501,9 +478,6 @@ class CustomPlayer:
 
             cur_depth += 1
             legal_moves = game.get_legal_moves()
-            # deubg code
-            #print("in min search, depth", depth, "cur_depth", cur_depth, "legal_moves", legal_moves)
-            #print(game.to_string())
 
             # If we can judge the winner at the current state, then just return
             # the score and active player's current position
