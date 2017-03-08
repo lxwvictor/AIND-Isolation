@@ -95,7 +95,6 @@ class CustomPlayer:
         self.method = method
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
-        #print("dp", search_depth, "it", iterative, "mt", method)
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
@@ -168,10 +167,7 @@ class CustomPlayer:
                     depth = 0
                     while True:
                         depth += 1
-                        #print("dp", depth, "tl", self.time_left())
-                        #print(game.to_string())
                         best_value, best_move = self.alphabeta(game, depth)
-                        #print(best_value, best_move)
                         pass
                 else:
                     best_value, best_move = self.alphabeta(game, self.search_depth)
