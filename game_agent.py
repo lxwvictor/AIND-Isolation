@@ -82,13 +82,11 @@ class CustomPlayer:
     """
 
     def __init__(self, search_depth=3, score_fn=custom_score,
-                 iterative=True, method='minimax', timeout=20.):
-        # timeout of 98 is chose because it's small than 99 (from agent_test.py)
-        # and 150 (from tournament.py). Since the branch factor is max of 8,
-        # in the iterative depeening test, 99 is actually not big enough.
-        # Supposing it takes 20ms on level 3, then level 4 may take 160ms,
-        # already exceeded the 150ms. 98 is a compromise, even though it still
-        # has timeout in the tests from tounament.py
+                 iterative=True, method='minimax', timeout=15.):
+        # timeout of 10 should be enough to allow the program to abort and 
+        # raise the Timeout event. Current state will be aborted and return the
+        # last known state/move to the calling function. Thus in both the
+        # max_search() and min_search() functions there is a timeout check.
         self.search_depth = search_depth
         self.iterative = iterative
         self.score = score_fn
@@ -176,7 +174,6 @@ class CustomPlayer:
             pass
 
         except Timeout:
-            self.search_depth = depth
             # Handle any actions required at timeout, if necessary
             return best_move
             pass

@@ -343,11 +343,10 @@ class Board(object):
                 move_history[-1].append(curr_move)
 
             if move_end < 0:
-                print("There is one timeout, player ", self.__player_symbols__[self.active_player],
-                    "depth", self.active_player.search_depth)
                 return self.__inactive_player__, move_history, "timeout"
 
             if curr_move not in legal_player_moves:
                 return self.__inactive_player__, move_history, "illegal move"
 
             self.apply_move(curr_move)
+            #print(self.to_string())
