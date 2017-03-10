@@ -46,7 +46,7 @@ def custom_score(game, player):
 
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    return float(own_moves - opp_moves)
+    return float(own_moves - 1.5*opp_moves)
     
     raise NotImplementedError
 
@@ -82,7 +82,7 @@ class CustomPlayer:
     """
 
     def __init__(self, search_depth=3, score_fn=custom_score,
-                 iterative=True, method='minimax', timeout=98.):
+                 iterative=True, method='minimax', timeout=20.):
         # timeout of 98 is chose because it's small than 99 (from agent_test.py)
         # and 150 (from tournament.py). Since the branch factor is max of 8,
         # in the iterative depeening test, 99 is actually not big enough.
@@ -176,6 +176,7 @@ class CustomPlayer:
             pass
 
         except Timeout:
+            self.search_depth = depth
             # Handle any actions required at timeout, if necessary
             return best_move
             pass
@@ -236,6 +237,9 @@ class CustomPlayer:
             tuple(int, int): The best move of the branch
 
             """
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise Timeout()
+
             cur_depth += 1
             legal_moves = game.get_legal_moves()
 
@@ -295,6 +299,9 @@ class CustomPlayer:
             tuple(int, int): The best move of the branch
 
             """
+
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise Timeout()
 
             cur_depth += 1
             legal_moves = game.get_legal_moves()
@@ -407,6 +414,9 @@ class CustomPlayer:
             tuple(int, int): The best move of the branch
 
             """
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise Timeout()
+
             cur_depth += 1
             legal_moves = game.get_legal_moves()
 
@@ -471,6 +481,8 @@ class CustomPlayer:
             tuple(int, int): The best move of the branch
 
             """
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise Timeout()
 
             cur_depth += 1
             legal_moves = game.get_legal_moves()
