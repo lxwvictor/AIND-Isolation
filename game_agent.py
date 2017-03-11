@@ -43,11 +43,47 @@ def custom_score(game, player):
 
     if game.is_winner(player):
         return float("inf")
-
+    """
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    return float(own_moves - 1.5*opp_moves)
-    
+    return float(own_moves - 3*opp_moves)
+    """
+    nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
+    curloc = game.__last_player_move__[player]
+    curopploc = game.__last_player_move__[game.get_opponent(player)]
+    emptynb_count = 0
+    emptyoppnb_count = 0
+    for offset in nboffsets:
+        if player.time_left() < player.TIMER_THRESHOLD:
+            raise Timeout()
+        nb = tuple(map(lambda x, y: x + y, offset, curloc))
+        oppnb = tuple(map(lambda x, y: x + y, offset, curopploc))
+        if 0 <= nb[0] < game.height and \
+            0 <= nb[1] < game.width and \
+            nb in game.get_blank_spaces():
+                emptynb_count += 1
+
+        if 0 <= oppnb[0] < game.height and \
+            0 <= oppnb[1] < game.width and \
+            oppnb in game.get_blank_spaces():
+                emptyoppnb_count += 1
+
+    return float(emptynb_count - emptyoppnb_count)
+    """
+    nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
+    curloc = game.__last_player_move__[player]
+    emptynb_count = 0
+    for offset in nboffsets:
+        if player.time_left() < player.TIMER_THRESHOLD:
+            raise Timeout()
+        nb = tuple(map(lambda x, y: x + y, offset, curloc))
+        if 0 <= nb[0] < game.height and \
+            0 <= nb[1] < game.width and \
+            nb in game.get_blank_spaces():
+                emptynb_count += 1
+
+    return float(emptynb_count)
+    """
     raise NotImplementedError
 
 
