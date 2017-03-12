@@ -43,10 +43,12 @@ def custom_score(game, player):
 
     if game.is_winner(player):
         return float("inf")
-    """
+    
+    
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     return float(own_moves - 3*opp_moves)
+
     """
     nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
     curloc = game.__last_player_move__[player]
@@ -69,6 +71,7 @@ def custom_score(game, player):
                 emptyoppnb_count += 1
 
     return float(emptynb_count - emptyoppnb_count)
+    """
     """
     nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
     curloc = game.__last_player_move__[player]
