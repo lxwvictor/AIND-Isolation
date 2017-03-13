@@ -49,7 +49,7 @@ def custom_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     return float(own_moves - 3*opp_moves)
 
-    """
+    """ Another heuristic to compute the number empty neighbours
     nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
     curloc = game.__last_player_move__[player]
     curopploc = game.__last_player_move__[game.get_opponent(player)]
@@ -72,7 +72,8 @@ def custom_score(game, player):
 
     return float(emptynb_count - emptyoppnb_count)
     """
-    """
+
+    """ #own empty neighbours - #opponent empty neighbours
     nboffsets=[(i,j) for i in range(-2,3) for j in range(-2,3) if abs(i) + abs(j) != 0]
     curloc = game.__last_player_move__[player]
     emptynb_count = 0
